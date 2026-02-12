@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realistische Verjaardagskaart</title>
+    <style>
+        body {
+            background-color: #f7d794; /* Warme achtergrondkleur */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Container om alles centraal te houden */
+        .container {
+            position: relative;
+        }
+
+        .envelope-wrapper {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            cursor: pointer;
+        }
+
+        /* De achterkant van de envelop (binnenkant donkerder) */
+        .envelope-back {
+            position: absolute;
+            width: 300px;
+            height: 200px;
+            background-color: #b71c1c; /* Donkerrood voor binnenkant */
+            border-radius: 5px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3); /* Schaduw op de tafel */
+            z-index: 1;
+        }
+
+        /* De brief */
+        .letter {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 260px; /* Iets smaller dan envelop */
+            height: 180px;
+            background: #fff;
+            /* Bloemen achtergrond */
+            background-image: url('https://img.freepik.com/free-vector/hand-painted-watercolor-pastel-sky-background_23-2148902771.jpg');
+            background-size: cover;
+            border-radius: 5px;
+            z-index: 2; /* Zit BOVEN achterkant, maar ONDER de flappen */
+            transition: bottom 0.6s ease-in-out 0.5s, z-index 0s 0.5s;
+            padding: 15px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+
+        .letter-text {
+            font-family: 'Brush Script MT', cursive;
+            font-size: 28px;
+            color: #d81b60;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ffcdd2;
+            width: 100%;
+        }
+
+        /* De voorkant flappen (Links, Rechts, Onder) */
+        /* We gebruiken borders om driehoeken te maken */
+        
+        .flap {
+            position: absolute;
+            width: 0;
+            height: 0;
+            z-index: 3; /* Bovenop de brief */
+        }
+
+        .flap-left {
+            top: 0;
+            left: 0;
+            border-top: 100px solid transparent;
+            border-bottom: 100px solid transparent;
+            border-left: 150px solid #e53935; /* Rood */
+            border-radius: 5px 0 0 5px;
+        }
+
+        .flap-right {
+            top: 0;
+            right: 0;
+            border-top: 100px solid transparent;
+            border-bottom: 100px solid transparent;
+            border-right: 150px solid #e53935; /* Rood */
+            border-radius: 0 5px 5px 0;
+        }
+
+        .flap-bottom {
+            bottom: 0;
+            left: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-bottom: 110px solid #ef5350; /* Iets lichter rood voor diepte */
+            border-radius: 0 0 5px 5px;
+            /* Lichte drop-shadow om de onderste flap los te laten komen */
+            filter: drop-shadow(0 -2px 3px rgba(0,0,0,0.1)); 
+        }
+
+        /* De bovenste flap (die open gaat) */
+        .flap-top {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 110px solid #d32f2f; /* Iets donkerder rood */
+            transform-origin: top;
+            z-index: 4; /* Helemaal bovenop */
+            transition: transform 0.6s ease-in-out, z-index 0.2s;
+            border-radius: 5px 5px 0 0;
+        }
+
+        /* Animatie classes wanneer geopend */
+        
+        /* 1. Flap openen */
+        .container.open .flap-top {
+            transform: rotateX(180deg);
+            z-index: 1; /* Gaat achter de brief */
+            transition: transform 0.6s ease-in-out, z-index 0s 0.3s;
+        }
+
+        /* 2. Brief schuift eruit */
+        .container.open .letter {
+            bottom: 120px; /* Schuift omhoog */
+            z-index: 5; /* Komt uiteindelijk boven alles te liggen */
+            transition: bottom 0.6s ease-in-out 0.6s, z-index 0s 0.6s; /* Wacht 0.6s tot flap open is */
+            transform: translateX(-50%) rotate(2deg); /* Klein beetje scheef voor speels effect */
+        }
+
+        .click-text {
+            position: absolute;
+            top: 250px;
+            width: 100%;
+            text-align: center;
+            color: #8d6e63;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container" id="cardContainer">
+        <div class="envelope-wrapper">
+            <div class="envelope-back"></div>
+            
+            <div class="letter">
+                <div class="letter-text">
+                    Happy Birthday<br>
+                    <span style="font-size:40px;">&lt;3</span>
+                </div>
+            </div>
+
+            <div class="flap flap-left"></div>
+            <div class="flap flap-right"></div>
+            <div class="flap flap-bottom"></div>
+            
+            <div class="flap flap-top"></div>
+        </div>
+        <div class="click-text">Klik om te openen</div>
+    </div>
+
+    <script>
+        const container = document.getElementById('cardContainer');
+        
+        container.addEventListener('click', () => {
+            // Voegt 'open' toe als het er niet is, verwijdert het als het er wel is
+            container.classList.toggle('open');
+        });
+    </script>
+
+</body>
+</html>
